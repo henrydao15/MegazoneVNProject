@@ -1,0 +1,82 @@
+spring:
+  main:
+    allow-bean-definition-overriding: true
+  mvc:
+    throw-exception-if-no-handler-found: true
+    favicon:
+      enabled: false
+    date-format: yyyy-MM-dd HH:mm:ss
+  servlet:
+    multipart:
+      max-file-size: 100MB
+      max-request-size: 100MB
+  resources:
+    add-mappings: false
+  jackson:
+    date-format: yyyy-MM-dd HH:mm:ss
+    time-zone: GMT+9
+  cloud:
+    loadbalancer:
+      ribbon:
+        enabled: false
+
+mybatis-plus:
+  configuration:
+    default-scripting-language: com.megazone.core.mybatis.MybatisXMLDriver
+    call-setters-on-nulls: true
+  mapper-locations: classpath:/mapper/xml/*.xml
+
+eureka:
+  client:
+    enabled: true
+    fetch-registry: true
+    registerWithEureka: true
+    serviceUrl:
+      defaultZone: http://${EUREKA_HOST:127.0.0.1}:8761/eureka
+  instance:
+    hostname: localhost
+
+feign:
+  client:
+    config:
+      default:
+        connect-timeout: 60000
+        read-timeout: 60000
+  httpclient:
+    enabled: false
+  okhttp:
+    enabled: true
+
+crm:
+  upload:
+    config: 1
+    oss:
+      endpoint:
+      accessKeyId:
+      accessKeySecret:
+      publicUrl:
+      bucketName:
+        0:
+        1:
+    local:
+      publicUrl:
+      uploadPath:
+        0: D:/upload/private
+        1: D:/upload/public
+    cos:
+      region:
+      secretId:
+      secretKey:
+      publicUrl:
+      bucketName:
+        0:
+        1:
+    qnc:
+      accessKey:
+      secretKey:
+      publicUrl:
+      privateUrl:
+      bucketName:
+        0:
+        1:
+

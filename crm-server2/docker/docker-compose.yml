@@ -1,0 +1,103 @@
+version: '3'
+services:
+  db:
+    image: 'registry.cn-hangzhou.aliyuncs.com/72crm/mysql:5.7'
+    container_name: mysql
+    volumes:
+      - ./conf/mysql/mysqld.cnf:/etc/mysql/conf.d/source/mysqld.cnf
+      - ./data/mysql/data:/var/lib/mysql
+      - ./data/mysql/init:/docker-entrypoint-initdb.d/
+      - ./log/mysql:/var/log/mysql/
+      - ./mysql.sh:/mysql.sh
+    environment:
+      - MYSQL_ROOT_PASSWORD=kuberix2022!
+      - TZ=Asia/Seoul
+      - LANG=en_US.UTF-8
+    networks:
+      kuberix_crm_network:
+    ports:
+      - '3306:3306'
+    entrypoint: /mysql.sh
+    restart: always
+  redis:
+    image: 'registry.cn-hangzhou.aliyuncs.com/72crm/redis:6.0.8'
+    container_name: redis
+    volumes:
+      - ./conf/redis/redis.conf:/etc/redis.conf
+    ports:
+      - '6379:6379'
+    networks:
+      kuberix_crm_network:
+    command: [ "redis-server", "/etc/redis.conf" ]
+    restart: always
+  elasticsearch:
+    image: registry.cn-hangzhou.aliyuncs.com/72crm/elasticsearch:6.8.6
+    container_name: elasticsearch
+    volumes:
+      - ./data/elasticsearch/data:/usr/share/elasticsearch/data
+      - ./data/elasticsearch/plugins:/usr/share/elasticsearch/plugins
+    environment:
+      - discovery.type=single-node
+      - TZ=Asia/Seoul
+      - LANG=en_US.UTF-8
+    ports:
+      - "9200:9200"
+    networks:
+      kuberix_crm_network:
+    restart: always
+  xxl-job-admin:
+    image: registry.cn-hangzhou.aliyuncs.com/72crm/xxl-job:2.1.2
+    container_name: xxl-job-admin
+    volumes:
+      - ./log/xxl-job:/data/applogs/xxl-job/
+    environment:
+      PARAMS: '--spring.datasource.url=jdbc:mysql://mysql:3306/xxl_job?Unicode=true&characterEncoding=UTF-8&serverTimezone=Asia/Seoul --spring.datasource.username=root --spring.datasource.password=kuberix2022!'
+    ports:
+      - "7070:8080"
+    networks:
+      kuberix_crm_network:
+    restart: always
+  eurekaserver:
+    image: kuberixvdc/eureka-server:latest
+    container_name: "eurekaserver"
+    ports:
+      - "8761:8761"
+    networks:
+      kuberix_crm_network:
+  kuberixcrm:
+    image: kuberix-crm:latest
+    container_name: "kuberixcrm"
+    volumes:
+      - ./kuberixcrm.sh:/kuberixcrm.sh
+      - ./log/kuberixcrm:/opt/package/logs/
+      - ./data/kuberixcrm/file:/opt/upload/
+    environment:
+      - DATASOURCE_DBTYPE=mysql
+      - DATASOURCE_HOST=mysql
+      - DATASOURCE_PORT=3306
+      - DATASOURCE_USERNAME=root
+      - DATASOURCE_PASSWORD=kuberix2022!
+      - ELASTICSEARCH_HOST=elasticsearch
+      - REDIS_HOST=redis
+      - REDIS_PORT=6379
+      - REDIS_PASSWORD=123456
+      - EUREKA_HOST=eurekaserver
+      - XXL_JOB_HOST=xxl-job-admin
+      - XXL_JOB_PORT=8080
+    ports:
+      - "8443:8443"
+    networks:
+      kuberix_crm_network:
+#  crmfrontend:
+#    image: crm-frontend:latest
+#    environment:
+#      - API_SERVER=http://crmserver:8443/
+#    container_name: "crmfrontend"
+#    ports:
+#      - "8090:8090"
+#    networks:
+#      kuberix_crm_network:
+networks:
+  kuberix_crm_network:
+    external:
+      name: kuberix_crm_network

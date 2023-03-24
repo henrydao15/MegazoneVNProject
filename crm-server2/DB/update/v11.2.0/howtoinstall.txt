@@ -1,0 +1,2 @@
+kuberix_crm_single v11.2.0.sql
+java -jar update-V11.2.0.jar

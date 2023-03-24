@@ -1,0 +1,31 @@
+spring:
+  redis:
+    host: ${REDIS_HOST:127.0.0.1}
+    port: ${REDIS_PORT:6379}
+    password: ${REDIS_PASSWORD:123456}
+    database: 12
+    lettuce:
+      pool:
+        max-active: 300
+  datasource:
+    url: jdbc:${DATASOURCE_DBTYPE:mysql}://${DATASOURCE_HOST:127.0.0.1}:${DATASOURCE_PORT:3306}/nacos?characterEncoding=utf8&useSSL=false&zeroDateTimeBehavior=convertToNull&tinyInt1isBit=false&serverTimezone=Asia/Seoul&useAffectedRows=true
+    username: ${DATASOURCE_USERNAME:root}
+    password: ${DATASOURCE_PASSWORD:kuberix2022!}
+
+### Keycloak Configuration
+keycloak:
+  realm: master
+  auth-server-url: http://localhost:8080/auth
+  ssl-required: external
+  resource: kuberix-paasta
+  credentials:
+    secret: Vb6LYTF4KoBzYr6cmx2KcsnmbUkGDwIR
+  public-client: true
+  principal-attribute: preferred_username
+  use-resource-role-mappings: true
+  # OPTIONAL. This should be set to true for services. If enabled the adapter will not attempt to authenticate users,
+  # but only verify bearer tokens. The default value is false.
+  #
+  # Bearer-only access type means that the application only allows bearer token requests. If this is turned on,
+  # this application cannot participate in browser logins.
+  bearer-only: false

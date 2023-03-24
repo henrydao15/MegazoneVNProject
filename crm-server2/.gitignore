@@ -1,0 +1,13 @@
+.DS_Store
+.idea/
+*.iml
+logs/**
+test
+target
+*/target/**
+rebel.xml
+rebel-remote.xml
+docker/log/**
+docker/data/elasticsearch/**
+docker/data/mysql/data/**
+jars/**
